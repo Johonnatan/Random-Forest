@@ -14,7 +14,7 @@ library(randomForest)
 #Carrega o conjunto de dados PimaIndiansDiabetes na memoria do R
 data(PimaIndiansDiabetes)
 
-#Armazena o conjunto de dados PimaIndiansDiabetes em um data frame com o nome dados
+#Armazena o conjunto de dados PimaIndiansDiabetes em um data frame
 dataframe <- PimaIndiansDiabetes
 
 #visualiza as estatisticas descritivas das variaveis do conjunto de dados
@@ -26,11 +26,11 @@ conjunto <- createDataPartition(dataframe$diabetes, #Variavel resposta do conjun
                                 list = F #Manter lista
 )
 
-#
+#Separa a base de teste e a treino
 base_treino <- dataframe[conjunto,]
 base_teste <- dataframe[-conjunto,]
 
-#Planta a seamente
+#Planta a semente
 set.seed(1)
 
 #Treina o modelo utilizando o algoritmo do Random Forest
