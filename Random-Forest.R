@@ -1,50 +1,51 @@
-rm(list=ls(all=TRUE)) #Remove objetos da memória do R
+#Remove objetos da memória do R
+rm(list=ls(all=TRUE))
 
-#Instala bibliotecas necessarias
-install.packages('mlbench') #biblioteca mlbench disponibiliza varios conjunto de dados, incluindo o Pima Indians Diabetes
-install.packages('caret',dependencies = TRUE) #biblioteca que tem enorme quantidade de ferramentas e algoritmos para trabalhar com machine learning
-install.packages('rpart') #rpart traz o algoritmo de arvore de decisao
-install.packages('rpart.plot') #o rpart.plot serve para visualizar a arvore de decisao gerado pelo rpart
+#Instala bibliotecas
+install.packages('mlbench') #biblioteca com conjunto de dados Pima Indians Diabetes
+install.packages('caret',dependencies = TRUE) #biblioteca para trabalhar com machine learning
 install.packages('randomForest')
 
 #Carrega as bibliotecas
 library(mlbench)
 library(caret)
-library(rpart)
-library(rpart.plot)
 library(randomForest)
 
-#Carrega o conjunto de dados na memoria do R
+#Carrega o conjunto de dados PimaIndiansDiabetes na memoria do R
 data(PimaIndiansDiabetes)
 
 #Armazena o conjunto de dados PimaIndiansDiabetes em um data frame com o nome dados
-dados <- PimaIndiansDiabetes
+dataframe <- PimaIndiansDiabetes
 
-#visualiza a media (mean) e outras estatisticas descritivas das variaveis
-summary(dados)
+#visualiza as estatisticas descritivas das variaveis do conjunto de dados
+summary(dataframe)
 
-#Separa conjunto de dados para treino e teste para hold-out
-index <- createDataPartition(dados$diabetes, #Variavel resposta
-                             p = 0.8, #Definir percentual para treino
-                             list = F #Manter list = F
+#Separa conjunto de dados para treino e teste no método de hold-out
+conjunto <- createDataPartition(dataframe$diabetes, #Variavel resposta do conjunto de dados
+                                p = 0.8, #Definir percentual para treino em 80%
+                                list = F #Manter lista
 )
-treino <- dados[index,]
-teste <- dados[-index,]
 
-####--- Treina random forest utilizando 100 arvores de decisoes
+#
+base_treino <- dataframe[conjunto,]
+base_teste <- dataframe[-conjunto,]
+
+#Planta a seamente
 set.seed(1)
 
+#Treina o modelo utilizando o algoritmo do Random Forest
 random_forest <- train(diabetes ~.,
-                       data = treino,
+                       data = base_treino,
                        ntrees = 100,
                        method = 'rf')
 
-#Visualiza as variais mais importantes para predicao, ou seja, aquelas que apresentaram maior ganha de informacao
+#Visualiza as variais da predicao
 varImpPlot(random_forest$finalModel)
 
-#A partir do algoritmo treinado, faz predicao nos dados separados para teste
-predicoes_random_forest <- predict(random_forest, newdata = teste)
+#Realiza predicao nos dados separados para teste
+predicoe <- predict(random_forest, newdata = base_teste)
 
-confusionMatrix(predicoes_random_forest,
-                teste$diabetes,
+#Imprime a matrix confusão do modelo
+confusionMatrix(predicoes,
+                base_teste$diabetes,
                 positive = 'pos')
